@@ -5,7 +5,6 @@ import time
 pygame.init()
 screen = pygame.display.set_mode((WIDCH, HENGT))
 
-# Загружаем изображение мыши
 mouse = pygame.image.load(NPC_FOTO["Dino"]["foto"])
 mouse = pygame.transform.scale(mouse, (120, 120))
 mouseX = 0

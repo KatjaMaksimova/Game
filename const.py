@@ -13,4 +13,4 @@ NPC_FOTO = {
     }
 }
 WIDCH = 1200
-HENGT = 600
+HENGT = 500
