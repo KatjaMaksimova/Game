@@ -1,16 +1,28 @@
-# This is a sample Python script.
+from const import *
+import pygame
+import time
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+pygame.init()
+screen = pygame.display.set_mode((WIDCH, HENGT))
 
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
-
-
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+# Загружаем изображение мыши
+mouse = pygame.image.load(NPC_FOTO["Dino"]["foto"])
+mouse = pygame.transform.scale(mouse, (120, 120))
+mouseX = 0
+mouseY = 200
+idx_foto = 0
+list_foto = NPC_FOTO["Dino"]["fotoBreath_list"]
+while True:
+    screen.fill((0, 0, 0))
+    pygame.time.delay(30)
+    time.sleep(0.1)
+    idx_foto += 1
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            exit()
+    idx_foto %= 6
+    mouse = pygame.image.load(list_foto[idx_foto])
+    mouse = pygame.transform.scale(mouse, (120, 120))
+    screen.blit(mouse, (mouseX, mouseY))
+    pygame.display.update()
