@@ -15,10 +15,17 @@ class NPC:
         self.count_fotoBreath = len(self.fotoBreath_list)
         self.index_fotoBreath = 0
 
+        self.fotoJump_list = NPC_FOTO[name]["fotoJump_list"]
+        self.count_fotoJump = len(self.fotoJump_list)
+        self.index_fotoJump = 0
+
     def breath(self):
         self.index_fotoBreath += 1
         self.index_fotoBreath %= self.count_fotoBreath
         self.npc = pygame.image.load(self.fotoBreath_list[self.index_fotoBreath])
         self.npc = pygame.transform.scale(self.npc, (self.widch, self.hengt))
         self.screen.blit(self.npc, (self.x, self.y))
+
+    def jump(self):
+        pass
 
