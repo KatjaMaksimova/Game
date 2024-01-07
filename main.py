@@ -1,22 +1,20 @@
+from data.menu_data.component import *
 from const import *
-from data.sprite.NPC import NPC
-from data.sprite.WALL import Wall
 import pygame
+from menu import *
 
 pygame.init()
 screen = pygame.display.set_mode((WIDCH, HENGT))
+menu = Menu(screen)
 
-nps = NPC(screen=screen)
 
-wall = Wall(screen=screen, x=0, y=nps.y + nps.hengt + 2, x2=WIDCH, y2=HENGT)
+with open("data//sprite//main_NPC", "r") as f:
+    name_NPC = f.readline().strip()
+if not name_NPC:
+    name_NPC = "Dino"
 
-while True:
-    screen.fill((0, 0, 0))
-    pygame.time.delay(60)
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            exit()
-    nps.breath()
-    wall.visible()
-    pygame.display.update()
+if menu.one_window():
+    while True:
+        answer = menu.main_window(name=name_NPC)
+        if answer == "shop":
+            menu.shop()
