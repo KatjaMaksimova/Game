@@ -7,8 +7,13 @@ class TextMessage:
         self.text = text
         self.size_text = size_text
         self.screen = screen
+        self.fon_true = False
+        self.fon_color = (100, 100, 100)
 
     def visible(self):
+        if self.fon_true:
+            pygame.draw.rect(self.screen, self.fon_color,
+                      (self.x, self.y, *self.size()))
         font = pygame.font.Font(None, self.size_text)
         text = font.render(self.text, True, self.color)
         self.screen.blit(text, (self.x, self.y))
@@ -17,6 +22,11 @@ class TextMessage:
         font = pygame.font.Font(None, self.size_text)
         text = font.render(self.text, True, self.color)
         return text.get_width(), text.get_height()
+
+    def fon(self, color=(100, 100, 100)):
+        self.fon_true = True
+        self.fon_color = color
+
 
 
 class Button:
@@ -27,11 +37,12 @@ class Button:
          self.color_text, self.color_button_activ) = (
             screen, color, text, x, y, length_x, length_y, color_text, color_button_activ)
         self.activ_button = False
+        self.pasiv = False
 
     def visible(self):
         r, g, b = self.color
         x, y, length_x, length_y = self.x, self.y, self.length_x, self.length_y
-        if self.activ_button:
+        if self.activ_button and not self.pasiv:
             r, g, b = self.color_button_activ
             x, y, length_x, length_y = x - 5, y - 5, length_x + 10, length_y + 10
 

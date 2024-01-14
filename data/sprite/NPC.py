@@ -5,9 +5,10 @@ from const import *
 class NPC:
     def __init__(self, screen, x=120, y=300, name="Dino", widch=150, hengt=150):
         self.x, self.y = x, y
+        self.name = name
         self.widch, self.hengt = widch, hengt
         self.screen = screen
-        self.npc = pygame.image.load(NPC_FOTO["Dino"]["foto"])
+        self.npc = pygame.image.load(NPC_FOTO[name]["foto"])
         self.npc = pygame.transform.scale(self.npc, (widch, hengt))
 
         self.fotoBreath_list = NPC_FOTO[name]["fotoBreath_list"]
