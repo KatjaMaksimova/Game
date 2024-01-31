@@ -18,3 +18,11 @@ if menu.one_window():
         answer = menu.main_window(name=name_NPC)
         if answer == "shop":
             menu.shop()
+        elif answer == "typesDino":
+            menu.typesDino()
+        with open("data//sprite//main_NPC", "r") as f:
+            name_NPC = f.readline().strip()
+        if not name_NPC:
+            with open("data//sprite//main_NPC", "w") as f:
+                f.write("Dino")
+            name_NPC = "Dino"
