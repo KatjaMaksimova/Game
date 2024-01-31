@@ -28,6 +28,28 @@ class TextMessage:
         self.fon_color = color
 
 
+class Money:
+    def __init__(self, screen, count, x=0, y=0):
+        self.screen, self.x, self.y, self.count = screen, x, y, count
+        self.image = pygame.image.load("data//menu_data//money.png")
+        self.image = pygame.transform.scale(self.image, (50, 50))
+
+        self.count_text = TextMessage(self.screen, text=f"{self.count}", color=(0, 100, 0), size_text=50)
+        self.count_text.fon(color=(190, 190, 190))
+        self.count_text.x = 50
+        self.count_text.y = 10
+
+    def visible(self):
+        self.update()
+        self.screen.blit(self.image, (self.x, self.y))
+        self.count_text.visible()
+
+    def update(self):
+        file_money = open("money")
+        self.count = str([i.strip() for i in file_money][0])
+        file_money.close()
+        self.count_text.text = self.count
+
 
 class Button:
     def __init__(self, screen, color=(100, 50, 50), text="1234", x=50, y=50, length_x=50, length_y=50,
