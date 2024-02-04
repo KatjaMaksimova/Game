@@ -27,7 +27,7 @@ def load_image(name):
 
 other_image = {'kwall': load_image('killer.png'),
                'wall': load_image('barrier.png'),
-               'money': load_image('money.png'),
+               'money': load_image('money1.png'),
                'sky': load_image('sky.png'),
                'ground': load_image('ground.png'),
                'groundblock': load_image('ground_block.png')}
@@ -128,17 +128,32 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect().move((pos_x + 1) * sprite_width,
                                                (pos_y + 1) * sprite_height)
         self.cnt_live = 3
+        self.v = 0
+        self.gravity = 1
         self.jumping = False
 
-    # функция прыжка, активна при соответствующем флаге
-    def jump(self):
-        pass
-
     def update(self, *args):
-        self.rect.x += 10
+        dx, dy = 0, 0
+        # check collision in future
+        dx = 5
+        key = pygame.key.get_pressed()
+        if key[pygame.K_SPACE] and not self.jumping:
+            self.v = -20
+            self.jumping = True
+        if not key[pygame.K_SPACE]:
+            self.jumping = False
+        # "притяжение" персонажа к земле при прыжке
+        self.v += self.gravity
+        if self.v > 10:
+            self.v = 10
+        dy += self.v
 
-    def check_collision(self):
-        pass
+        self.rect.x += dx
+        self.rect.y += dy
+
+        if self.rect.bottom > height - sprite_height:
+            self.rect.bottom = height - sprite_height
+            dy = 0
 
     def check_event(self):
         key = pygame.key.get_pressed()
@@ -167,7 +182,7 @@ while play:
         if event.type == pygame.QUIT:
             pygame.quit()
             exit()
-        all_sprites.update(event)
+    all_sprites.update()
     camera.update(player)
     for sprite in move_sprites:
         camera.apply(sprite)
