@@ -27,11 +27,11 @@ def load_image(name):
 
 other_image = {'kwall': load_image('killer.png'),
                'wall': load_image('barrier.png'),
-               'money': load_image('money1.png'),
                'sky': load_image('sky.png'),
                'ground': load_image('ground.png'),
                'groundblock': load_image('ground_block.png')}
 
+money_image = [load_image(f'money{i}.png') for i in range(1, 7)]
 player_image = pygame.transform.scale(load_image('Dino.png'), (60, 60))
 cnt_live_image = [load_image('live_yes.png'), load_image('live_no.png')]
 
@@ -113,12 +113,20 @@ class Wall(pygame.sprite.Sprite):
 class Money(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y):
         super().__init__(all_sprites, money_group, move_sprites)
-        self.image = other_image['money']
+        # счётчик итераций для анимации
+        self.cnt = 0
+        self.now_image_idx = 0
+        self.image = money_image[self.now_image_idx]
         self.rect = self.image.get_rect().move((pos_x + 1) * sprite_width, (pos_y + 1) * sprite_height)
 
     def update(self, *args):
+        self.cnt += 1
         if self.rect.x <= - self.rect.w:
             self.kill()
+        if self.cnt == 10:
+            self.now_image_idx = (self.now_image_idx + 1) % 6
+            self.image = money_image[self.now_image_idx]
+            self.cnt = 0
 
 
 class Player(pygame.sprite.Sprite):
