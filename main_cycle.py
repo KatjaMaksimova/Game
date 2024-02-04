@@ -5,6 +5,7 @@ import sys
 pygame.init()
 width, height = size = 1200, 600
 screen = pygame.display.set_mode(size)
+sprite_width = sprite_height = 60 # last 75
 
 FPS = 60
 
@@ -24,15 +25,16 @@ def load_image(name):
     return image
 
 
-other_image = {'kwall': load_image('killer_wall.png'),
-               'wall': load_image('wall.png'),
-               'money': load_image('money.png')}
+other_image = {'kwall': load_image('killer.png'),
+               'wall': load_image('barrier.png'),
+               'money': load_image('money.png'),
+               'sky': load_image('sky.png'),
+               'ground': load_image('ground.png')}
 
-player_image = pygame.transform.scale(load_image('Dino.png'), (75, 75))
+player_image = pygame.transform.scale(load_image('Dino.png'), (60, 60))
 
-
-sprite_width = sprite_height = 75
-
+ground_group = pygame.sprite.Group()
+sky_group = pygame.sprite.Group()
 all_sprites = pygame.sprite.Group()
 money_group = pygame.sprite.Group()
 killer_group = pygame.sprite.Group()
@@ -40,6 +42,8 @@ player_group = pygame.sprite.Group()
 
 
 def generate_level(level):
+    Sky()
+    Ground()
     for y in range(len(level)):
         for x in range(len(level[y])):
             if level[y][x] == '@':
@@ -50,6 +54,20 @@ def generate_level(level):
                 Wall(x, y)
             elif level[y][x] == 'k':
                 KillerWall(x, y)
+
+
+class Sky(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__(all_sprites, sky_group)
+        self.image = other_image['sky']
+        self.rect = self.image.get_rect().move(0, 0)
+
+
+class Ground(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__(all_sprites, ground_group)
+        self.image = other_image['ground']
+        self.rect = self.image.get_rect().move(0, height - sprite_height)
 
 
 class KillerWall(pygame.sprite.Sprite):
@@ -92,4 +110,3 @@ while play:
     all_sprites.draw(screen)
     pygame.display.flip()
     clock.tick(FPS)
-
