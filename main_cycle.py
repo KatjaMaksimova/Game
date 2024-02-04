@@ -5,7 +5,7 @@ import sys
 pygame.init()
 width, height = size = 1200, 600
 screen = pygame.display.set_mode(size)
-sprite_width = sprite_height = 60 # last 75
+sprite_width = sprite_height = 60  # last 75
 
 FPS = 60
 
@@ -29,13 +29,16 @@ other_image = {'kwall': load_image('killer.png'),
                'wall': load_image('barrier.png'),
                'money': load_image('money.png'),
                'sky': load_image('sky.png'),
-               'ground': load_image('ground.png')}
+               'ground': load_image('ground.png'),
+               'groundblock': load_image('ground_block.png')}
 
 player_image = pygame.transform.scale(load_image('Dino.png'), (60, 60))
+cnt_live_image = [load_image('live_yes.png'), load_image('live_no.png')]
 
 ground_group = pygame.sprite.Group()
 sky_group = pygame.sprite.Group()
 all_sprites = pygame.sprite.Group()
+move_sprites = pygame.sprite.Group()
 money_group = pygame.sprite.Group()
 killer_group = pygame.sprite.Group()
 player_group = pygame.sprite.Group()
@@ -44,16 +47,20 @@ player_group = pygame.sprite.Group()
 def generate_level(level):
     Sky()
     Ground()
+    px, py = 0, 0
     for y in range(len(level)):
         for x in range(len(level[y])):
             if level[y][x] == '@':
-                Player(x, y)
+                px, py = x, y
             elif level[y][x] == '*':
                 Money(x, y)
             elif level[y][x] == 'w':
                 Wall(x, y)
             elif level[y][x] == 'k':
                 KillerWall(x, y)
+            elif level[y][x] == 'g':
+                GroundBlock(x, y)
+    return Player(px, py)
 
 
 class Sky(pygame.sprite.Sprite):
@@ -70,42 +77,100 @@ class Ground(pygame.sprite.Sprite):
         self.rect = self.image.get_rect().move(0, height - sprite_height)
 
 
+class GroundBlock(pygame.sprite.Sprite):
+    def __init__(self, pos_x, pos_y):
+        super().__init__(all_sprites, ground_group, move_sprites)
+        self.image = other_image['groundblock']
+        self.rect = self.image.get_rect().move((pos_x + 1) * sprite_width, (pos_y + 1) * sprite_height + 40)
+
+    def update(self, *args):
+        if self.rect.x <= - self.rect.w:
+            self.kill()
+
+
 class KillerWall(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y):
-        super().__init__(all_sprites, killer_group)
+        super().__init__(all_sprites, killer_group, move_sprites)
         self.image = other_image['kwall']
         self.rect = self.image.get_rect().move((pos_x + 1) * sprite_width, (pos_y + 1) * sprite_height)
+
+    def update(self, *args):
+        if self.rect.x <= - self.rect.w:
+            self.kill()
 
 
 class Wall(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y):
-        super().__init__(all_sprites)
+        super().__init__(all_sprites, move_sprites)
         self.image = other_image['wall']
         self.rect = self.image.get_rect().move((pos_x + 1) * sprite_width, (pos_y + 1) * sprite_height)
+
+    def update(self, *args):
+        if self.rect.x <= - self.rect.w:
+            self.kill()
 
 
 class Money(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y):
-        super().__init__(all_sprites, money_group)
+        super().__init__(all_sprites, money_group, move_sprites)
         self.image = other_image['money']
         self.rect = self.image.get_rect().move((pos_x + 1) * sprite_width, (pos_y + 1) * sprite_height)
+
+    def update(self, *args):
+        if self.rect.x <= - self.rect.w:
+            self.kill()
 
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y):
-        super().__init__(all_sprites, player_group)
+        super().__init__(all_sprites, player_group, move_sprites)
         self.image = player_image
-        self.rect = self.image.get_rect().move((pos_x + 1) * sprite_width, (pos_y + 1) * sprite_height)
+        self.rect = self.image.get_rect().move((pos_x + 1) * sprite_width,
+                                               (pos_y + 1) * sprite_height)
+        self.cnt_live = 3
+        self.jumping = False
+
+    # функция прыжка, активна при соответствующем флаге
+    def jump(self):
+        pass
+
+    def update(self, *args):
+        self.rect.x += 10
+
+    def check_collision(self):
+        pass
+
+    def check_event(self):
+        key = pygame.key.get_pressed()
+        if key[0] == pygame.K_SPACE:
+            self.jumping = True
+
+
+# класс камеры будет управлять объектами, отслеживая игрока по координате x
+class Camera:
+    def __init__(self):
+        self.dx = 0
+
+    def apply(self, obj):
+        obj.rect.x += self.dx
+
+    def update(self, target):
+        self.dx = -(target.rect.x + target.rect.w // 2 - width // 2)
 
 
 play = True
 clock = pygame.time.Clock()
-generate_level(load_level(0))
+player = generate_level(load_level(0))
+camera = Camera()
 while play:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             exit()
+        all_sprites.update(event)
+    camera.update(player)
+    for sprite in move_sprites:
+        camera.apply(sprite)
     screen.fill((130, 181, 232))
     all_sprites.draw(screen)
     pygame.display.flip()
