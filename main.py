@@ -7,7 +7,7 @@ pygame.init()
 screen = pygame.display.set_mode((WIDCH, HENGT))
 menu = Menu(screen)
 
-music_menu = pygame.mixer.Sound('data/music/fon_musik.ogg')
+music_menu = pygame.mixer.Sound('music/fon_musik.ogg')
 music_menu.play(-1)
 with open("data//sprite//main_NPC", "r") as f:
     name_NPC = f.readline().strip()
