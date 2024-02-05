@@ -145,7 +145,6 @@ class Player(pygame.sprite.Sprite):
         self.cnt = 0
         self.gravity = 1
         self.jumping = False
-        self.not_move = False  # отсутствие движения игрока по x
 
     def update(self, *args):
         dx, dy = 0, 0
@@ -181,9 +180,6 @@ class Player(pygame.sprite.Sprite):
                 elif self.v >= 0:
                     dy = rectangle.top - self.rect.bottom
                     self.v = 0
-
-        if not dx:
-            self.not_move = True
 
         self.rect.x += dx
         self.rect.y += dy
@@ -224,13 +220,7 @@ class Camera:
 
     def update(self, target):
         # получаем сведения о том, движется ли персонаж по x
-        flag_not_move = target.return_not_move()
-        # если не движется, то сдвигаем его с остальными спрайтами
-        if flag_not_move:
-            target.rect.x += self.dx
-        # иначе изменяем dx
-        else:
-            self.dx = -(target.rect.x + target.rect.w // 2 - width // 2)
+        self.dx = -(target.rect.x + target.rect.w // 2 - width // 2)
 
 
 play = True
