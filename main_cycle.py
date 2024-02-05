@@ -45,6 +45,14 @@ player_group = pygame.sprite.Group()
 wall_group = pygame.sprite.Group()  # препятствия в виде поленьев и земляные платформы
 
 
+def generate_text(cnt, sc):
+    font = pygame.font.Font('data/pixel_font.ttf', 20)
+    text = font.render(f"Money: {cnt}", True, (40, 40, 40))
+    place = text.get_rect()
+    place.x = width - 120
+    place.y = sprite_height + 10
+    sc.blit(text, place)
+
 def generate_level(level):
     Sky()
     Ground()
@@ -145,6 +153,7 @@ class Player(pygame.sprite.Sprite):
         self.cnt = 0
         self.gravity = 1
         self.jumping = False
+        self.killers = []
 
     def update(self, *args):
         dx, dy = 0, 0
@@ -202,12 +211,25 @@ class Player(pygame.sprite.Sprite):
                 money.kill()
                 self.cnt_of_money += 1
 
-    def return_not_move(self):
-        return self.not_move
+        # проверка столкновений с "убийцами"
+        # один убийца может нанести урон только один раз
+        for killer in killer_group:
+            killer_rect = killer.rect
+            if killer not in self.killers and killer_rect.colliderect(self.rect):
+                self.cnt_live -= 1
+                self.killers.append(killer)
+
+    def return_live(self):
+        if self.cnt_live > 0:
+            return True
+        return False
 
     def return_coors(self):
         x, y = self.rect.x, self.rect.y
         return x, y
+
+    def return_money_cnt(self):
+        return self.cnt_of_money
 
 
 # класс камеры будет управлять объектами, отслеживая игрока по координате x
@@ -239,5 +261,7 @@ while play:
     #screen.fill((220, 24, 84))
     screen.fill((87, 136, 179))
     all_sprites.draw(screen)
+    generate_text(player.return_money_cnt(), screen)
+    play = player.return_live()
     pygame.display.flip()
     clock.tick(FPS)
