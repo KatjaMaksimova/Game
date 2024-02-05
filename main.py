@@ -20,6 +20,8 @@ if menu.one_window():
             menu.shop()
         elif answer == "typesDino":
             menu.typesDino()
+        elif answer == "game":
+            pass
         with open("data//sprite//main_NPC", "r") as f:
             name_NPC = f.readline().strip()
         if not name_NPC:
