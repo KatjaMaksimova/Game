@@ -99,6 +99,14 @@ class Menu:
                                 text="Выбрать персонажа",
                                 length_x=500, length_y=80,
                                 x=0, y=HENGT - 80)
+        btn_game = Button(
+                        self.screen, color=(20, 150, 20),
+                        color_text=(240, 240, 240),
+                        color_button_activ=(100, 200, 100),
+                        text="Начать игру",
+                        length_x=200, length_y=80,
+                        x=WIDCH - 250, y=HENGT - 80
+        )
 
         while run:
             self.screen.fill((0, 0, 0))
@@ -111,9 +119,12 @@ class Menu:
                     exit()
                 if event.type == pygame.MOUSEMOTION:
                     btn_types_dino.activ(*event.pos)
+                    btn_game.activ(*event.pos)
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if btn_types_dino.activ_clicked(*event.pos):
                         return "typesDino"
+                    if btn_game.activ_clicked(*event.pos):
+                        return "game"
                 if shop.activ_clicked():
                     return "shop"
 
@@ -121,6 +132,7 @@ class Menu:
             shop.visible()
             self.money_info.visible()
             btn_types_dino.visible()
+            btn_game.visible()
             npc.breath()
             pygame.display.update()
 
