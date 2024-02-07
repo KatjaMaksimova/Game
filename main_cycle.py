@@ -29,7 +29,9 @@ other_image = {'kwall': load_image('killer.png'),
                'wall': load_image('barrier.png'),
                'sky': load_image('sky.png'),
                'ground': load_image('ground.png'),
-               'groundblock': load_image('ground_block.png')}
+               'groundblock': load_image('ground_block.png'),
+               'live_yes': load_image('live_yes.png'),
+               'live_no': load_image('live_no.png')}
 
 money_image = [load_image(f'money{i}.png') for i in range(1, 7)]
 player_image = [load_image('dragon1.png'), load_image('dragon2.png')]
@@ -43,6 +45,7 @@ money_group = pygame.sprite.Group()
 killer_group = pygame.sprite.Group()
 player_group = pygame.sprite.Group()
 wall_group = pygame.sprite.Group()  # препятствия в виде поленьев и земляные платформы
+hearts_list = []
 
 
 def generate_text(cnt, sc):
@@ -52,6 +55,7 @@ def generate_text(cnt, sc):
     place.x = width - 120
     place.y = sprite_height + 10
     sc.blit(text, place)
+
 
 def generate_level(level):
     Sky()
@@ -220,9 +224,7 @@ class Player(pygame.sprite.Sprite):
                 self.killers.append(killer)
 
     def return_live(self):
-        if self.cnt_live > 0:
-            return True
-        return False
+        return self.cnt_live
 
     def return_coors(self):
         x, y = self.rect.x, self.rect.y
@@ -230,6 +232,21 @@ class Player(pygame.sprite.Sprite):
 
     def return_money_cnt(self):
         return self.cnt_of_money
+
+
+class Hearts:
+    def __init__(self, k_x, k_y, n):
+        self.n = n
+        self.k_x = k_x
+        self.k_y = k_y
+        self.image_1 = pygame.transform.scale(other_image['live_yes'], (30, 30))
+        self.image_2 = pygame.transform.scale(other_image['live_no'], (30, 30))
+        #self.rect = self.image_1.get_rect().move(k_x + (sprite_width + 10) * (n + 1), k_y)
+
+    def update(self, check_n):
+        if self.n == check_n:
+            self.image_1 = self.image_2
+        screen.blit(self.image_1, (self.k_x + (30 + 10) * (self.n + 1), self.k_y))
 
 
 # класс камеры будет управлять объектами, отслеживая игрока по координате x
@@ -249,6 +266,9 @@ play = True
 clock = pygame.time.Clock()
 player = generate_level(load_level(0))
 camera = Camera()
+for i in range(3):
+    hearts_list.append(Hearts(width - 160, sprite_height * 1.8, i))
+
 while play:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -262,6 +282,9 @@ while play:
     screen.fill((87, 136, 179))
     all_sprites.draw(screen)
     generate_text(player.return_money_cnt(), screen)
-    play = player.return_live()
+    cnt_of_live = player.return_live()
+    for heart in hearts_list:
+        heart.update(cnt_of_live)
+    play = bool(cnt_of_live)
     pygame.display.flip()
     clock.tick(FPS)
