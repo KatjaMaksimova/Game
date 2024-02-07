@@ -30,7 +30,7 @@ def game():
                    'groundblock': load_image('ground_block.png'),
                    'live_yes': load_image('live_yes.png'),
                    'live_no': load_image('live_no.png'),
-                   'monster': load_image('cube.jpg')}
+                   'monster': load_image('monster.png')}
 
     money_image = [load_image(f'money{i}.png') for i in range(1, 7)]
     player_image = [load_image('dragon1.png'), load_image('dragon2.png')]
