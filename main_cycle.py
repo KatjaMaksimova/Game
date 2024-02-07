@@ -31,7 +31,8 @@ other_image = {'kwall': load_image('killer.png'),
                'ground': load_image('ground.png'),
                'groundblock': load_image('ground_block.png'),
                'live_yes': load_image('live_yes.png'),
-               'live_no': load_image('live_no.png')}
+               'live_no': load_image('live_no.png'),
+               'monster': load_image('cube.jpg')}
 
 money_image = [load_image(f'money{i}.png') for i in range(1, 7)]
 player_image = [load_image('dragon1.png'), load_image('dragon2.png')]
@@ -45,6 +46,7 @@ money_group = pygame.sprite.Group()
 killer_group = pygame.sprite.Group()
 player_group = pygame.sprite.Group()
 wall_group = pygame.sprite.Group()  # препятствия в виде поленьев и земляные платформы
+monster_group = pygame.sprite.Group()
 hearts_list = []
 
 
@@ -151,15 +153,18 @@ class Player(pygame.sprite.Sprite):
                                                (pos_y + 1) * sprite_height)
         self.width = self.image.get_width()
         self.height = self.image.get_height()
+        self.prew_x = self.rect.x
         self.cnt_live = 3
         self.cnt_of_money = 0
         self.v = 0
         self.cnt = 0
         self.gravity = 1
         self.jumping = False
+        self.kill_this = False
         self.killers = []
 
     def update(self, *args):
+        self.prew_x = self.rect.x
         dx, dy = 0, 0
 
         dx = 5
@@ -223,15 +228,45 @@ class Player(pygame.sprite.Sprite):
                 self.cnt_live -= 1
                 self.killers.append(killer)
 
+        # проверка столкновений с "монстром"
+        for monster in monster_group:
+            monster_rect = monster.rect
+            if monster_rect.colliderect(self.rect):
+                self.kill_this = True
+
+
     def return_live(self):
         return self.cnt_live
 
     def return_coors(self):
         x, y = self.rect.x, self.rect.y
-        return x, y
+        return x, y, self.prew_x
 
     def return_money_cnt(self):
         return self.cnt_of_money
+
+    def return_kill(self):
+        return self.kill_this
+
+
+class Monster(pygame.sprite.Sprite):
+    def __init__(self, k_x, k_y):
+        super().__init__(monster_group)
+        self.image = other_image['monster']
+        self.rect = self.image.get_rect()
+        self.rect.x = k_x
+        self.rect.y = k_y
+        self.delta = 0
+        self.delta_move = 5
+
+    def update(self, p_x, p_y, prew_x):
+        self.delta = p_x - self.rect.x
+        if prew_x != p_x:
+            self.rect.x = p_x - self.delta
+            self.rect.y = p_y
+        else:
+            self.rect.x += 5
+            self.rect.y = p_y
 
 
 class Hearts:
@@ -258,7 +293,6 @@ class Camera:
         obj.rect.x += self.dx
 
     def update(self, target):
-        # получаем сведения о том, движется ли персонаж по x
         self.dx = -(target.rect.x + target.rect.w // 2 - width // 2)
 
 
@@ -266,6 +300,7 @@ play = True
 clock = pygame.time.Clock()
 player = generate_level(load_level(0))
 camera = Camera()
+monster = Monster(0, 480)
 for i in range(3):
     hearts_list.append(Hearts(width - 160, sprite_height * 1.8, i))
 
@@ -275,16 +310,19 @@ while play:
             pygame.quit()
             exit()
     all_sprites.update()
+    px, py, prewx = player.return_coors()
+    monster.update(px, py, prewx)
     camera.update(player)
     for sprite in move_sprites:
         camera.apply(sprite)
     #screen.fill((220, 24, 84))
     screen.fill((87, 136, 179))
     all_sprites.draw(screen)
+    monster_group.draw(screen)
     generate_text(player.return_money_cnt(), screen)
     cnt_of_live = player.return_live()
     for heart in hearts_list:
         heart.update(cnt_of_live)
-    play = bool(cnt_of_live)
+    play = bool(cnt_of_live) and not player.return_kill()
     pygame.display.flip()
     clock.tick(FPS)
