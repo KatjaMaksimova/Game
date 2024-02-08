@@ -30,7 +30,8 @@ def game():
                    'groundblock': load_image('ground_block.png'),
                    'live_yes': load_image('live_yes.png'),
                    'live_no': load_image('live_no.png'),
-                   'monster': load_image('monster.png')}
+                   'monster': load_image('monster0.png'),
+                   'monster2': load_image('monster1.png')}
 
     money_image = [load_image(f'money{i}.png') for i in range(1, 7)]
     player_image = [load_image('dragon1.png'), load_image('dragon2.png')]
@@ -239,7 +240,10 @@ def game():
     class Monster(pygame.sprite.Sprite):
         def __init__(self, k_x, k_y):
             super().__init__(monster_group)
-            self.image = other_image['monster']
+            self.images = [other_image['monster'], other_image['monster2']]
+            self.image = self.images[0]
+            self.cnt_image = 0
+            self.now_image = 0
             self.rect = self.image.get_rect()
             self.rect.x = k_x
             self.rect.y = k_y
@@ -247,6 +251,10 @@ def game():
             self.delta_move = 5
 
         def update(self, p_x, p_y, prew_x):
+            if self.cnt_image > 10:
+                self.cnt_image = 0
+                self.now_image = (self.now_image + 1) % 2
+                self.image = self.images[self.now_image]
             self.delta = p_x - self.rect.x
             if prew_x != p_x:
                 self.rect.x = p_x - self.delta
@@ -254,6 +262,7 @@ def game():
             else:
                 self.rect.x += 5
                 self.rect.y = p_y
+            self.cnt_image += 1
 
     class Hearts:
         def __init__(self, k_x, k_y, n):
