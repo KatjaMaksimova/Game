@@ -31,7 +31,8 @@ def game():
                    'live_yes': load_image('live_yes.png'),
                    'live_no': load_image('live_no.png'),
                    'monster': load_image('monster0.png'),
-                   'monster2': load_image('monster1.png')}
+                   'monster2': load_image('monster1.png'),
+                   'flag': load_image('flag.png')}
 
     money_image = [load_image(f'money{i}.png') for i in range(1, 7)]
     player_image = [load_image('dragon1.png'), load_image('dragon2.png')]
@@ -46,6 +47,7 @@ def game():
     player_group = pygame.sprite.Group()
     wall_group = pygame.sprite.Group()  # препятствия в виде поленьев и земляные платформы
     monster_group = pygame.sprite.Group()
+    flag_group = pygame.sprite.Group()
     hearts_list = []
 
     def generate_text(cnt, sc):
@@ -72,7 +74,18 @@ def game():
                     KillerWall(x, y)
                 elif level[y][x] == 'g':
                     GroundBlock(x, y)
+                elif level[y][x] == 'f':
+                    Flag(x, y)
         return Player(px, py)
+
+    class Flag(pygame.sprite.Sprite):
+        def __init__(self, x, y):
+            super().__init__(all_sprites, move_sprites, flag_group)
+            self.image = other_image['flag']
+            self.rect = self.image.get_rect().move(x * sprite_width, y * sprite_height)
+
+        def return_flag_x(self):
+            return self.rect.x
 
     class Sky(pygame.sprite.Sprite):
         def __init__(self):
@@ -152,6 +165,7 @@ def game():
             self.jumping = False
             self.kill_this = False
             self.killers = []
+            self.win = False
 
         def update(self, *args):
             self.prew_x = self.rect.x
@@ -237,6 +251,13 @@ def game():
         def return_kill(self):
             return self.kill_this
 
+        def return_win(self):
+            return self.win
+
+        def update_win(self, x_flag):
+            if self.rect.x >= x_flag:
+                self.win = True
+
     class Monster(pygame.sprite.Sprite):
         def __init__(self, k_x, k_y):
             super().__init__(monster_group)
@@ -316,7 +337,15 @@ def game():
         cnt_of_live = player.return_live()
         for heart in hearts_list:
             heart.update(cnt_of_live)
+        for flag in flag_group:
+            player.update_win(flag.return_flag_x())
+        win = player.return_win()
         play = bool(cnt_of_live) and not player.return_kill()
+        if win:
+            play = False
+        # победа
+        if not play and win:
+            pass
         pygame.display.flip()
         clock.tick(FPS)
 
