@@ -1,0 +1,11 @@
+Index: main_cycle.py
+===================================================================
+diff --git a/main_cycle.py b/main_cycle.py
+--- a/main_cycle.py	
++++ b/main_cycle.py	
+@@ -349,4 +349,5 @@
+         pygame.display.flip()
+         clock.tick(FPS)
+ 
++
+ game()

@@ -1,0 +1,13 @@
+Index: hero.py
+===================================================================
+diff --git a/hero.py b/hero.py
+--- a/hero.py	
++++ b/hero.py	
+@@ -8,6 +8,7 @@
+         self.rect = self.image.rect()
+         self.rect.x = x
+         self.rect.y = y
++        self.step = 0 # счётчик пройденных пикселей в пределах перехода от одной клетки к др.
+         self.in_jump = False
+         self.y_jump = 0
+         self.max_height_jump = 150

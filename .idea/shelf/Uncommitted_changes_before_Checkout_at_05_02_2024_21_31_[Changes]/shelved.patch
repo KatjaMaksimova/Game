@@ -1,0 +1,15 @@
+Index: data/sprite/main_NPC
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>Dino
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/data/sprite/main_NPC b/data/sprite/main_NPC
+--- a/data/sprite/main_NPC	(revision 27d3244e3cf05e4636dfdd49cd0f377d05670acf)
++++ b/data/sprite/main_NPC	(date 1707157837627)
+@@ -1,1 +1,1 @@
+-Dino
+\ No newline at end of file
++DinoYellow
+\ No newline at end of file

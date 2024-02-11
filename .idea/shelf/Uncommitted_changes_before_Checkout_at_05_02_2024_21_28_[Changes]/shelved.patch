@@ -1,0 +1,22 @@
+Index: main_cycle.py
+===================================================================
+diff --git a/main_cycle.py b/main_cycle.py
+--- a/main_cycle.py	
++++ b/main_cycle.py	
+@@ -170,7 +170,6 @@
+             # проверка столкновений по x
+             if rectangle.colliderect(self.rect.x + dx, self.rect.y, self.width, self.height):
+                 dx = 0
+-
+             # проверка столкновений в координате y
+             if rectangle.colliderect(self.rect.x, self.rect.y + dy, self.width, self.height):
+                 # блок над игроком, игрок двигается вверх
+@@ -184,6 +183,8 @@
+ 
+         if not dx:
+             self.not_move = True
++        if dx:
++            self.not_move = False
+ 
+         self.rect.x += dx
+         self.rect.y += dy
